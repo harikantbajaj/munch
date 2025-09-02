@@ -17,8 +17,8 @@ const page = async () => {
     getLatestInterviews({ userId: user?.id! }),
   ]);
 
-  const hasPastInterviews = userInterviews?.length! > 0;
-  const hasLatestInterviews = latestInterviews?.length! > 0;
+  const hasPastInterviews = userInterviews?.interviews?.length! > 0;
+  const hasLatestInterviews = latestInterviews?.interviews?.length! > 0;
   return (
     <>
       <section className="card-cta">
@@ -43,10 +43,28 @@ const page = async () => {
       </section>
 
       <section className="flex flex-col gap-6 mt-8">
+        <h2>Explore Other Features</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Button asChild className="btn-secondary">
+            <Link href="/quiz">Take a Quiz</Link>
+          </Button>
+          <Button asChild className="btn-secondary">
+            <Link href="/code-compiler">Code Compiler</Link>
+          </Button>
+          <Button asChild className="btn-secondary">
+            <Link href="/resume-analyzer">Resume Analyzer</Link>
+          </Button>
+          <Button asChild className="btn-secondary">
+            <Link href="/chatbot">AI Chatbot</Link>
+          </Button>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-6 mt-8">
         <h2>Your interviews</h2>
         <div className="interviews-section">
           {hasPastInterviews ? (
-            userInterviews!.map((interview) => (
+            userInterviews!.interviews.map((interview) => (
               <InterviewCard {...interview} key={interview.id} />
             ))
           ) : (
@@ -59,7 +77,7 @@ const page = async () => {
         <h2>Take an interview</h2>
         <div className="interviews-section">
           {hasLatestInterviews ? (
-            latestInterviews!.map((interview) => (
+            latestInterviews!.interviews.map((interview) => (
               <InterviewCard {...interview} key={interview.id} />
             ))
           ) : (

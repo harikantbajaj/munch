@@ -1,3 +1,2 @@
-[ ] revisit TBD | TO BE DONE
-[ ] prompting does matter, it affect the output. It is worthy investment like learning to learn
-[] rate limiting to 2 requests
+- [x] Add a new section with navigation buttons for Quiz, Code Compiler, Resume Analyzer, and Chatbot on the main page (app/(root)/page.tsx)
+- [ ] Test navigation links to ensure they work

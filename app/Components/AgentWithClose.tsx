@@ -6,24 +6,25 @@ import { vapi } from "@/lib/vapi.sdk";
 import { useRouter } from "next/navigation";
 import { interviewer } from "@/constants";
 import { createFeedback } from "@/lib/actions/general.action";
+import { Button } from "@/components/ui/button";
 import { 
+  X, 
   Phone, 
   PhoneOff, 
   Mic, 
-  MicOff, 
   Volume2, 
-  VolumeX,
   MessageSquare,
   Brain,
   Loader2,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Home
 } from 'lucide-react';
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
-  CONNECTING = "CONNECTING", 
-  ACTIVE = "ACTIVE",
+  CONNECTING = "CONNECTING",
+  ACTIVE = "ACTIVE", 
   FINISHED = "FINISHED",
 }
 
@@ -41,7 +42,7 @@ interface AgentProps {
   questions?: string[];
 }
 
-const Agent: React.FC<AgentProps> = ({
+const AgentWithClose: React.FC<AgentProps> = ({
   userName,
   userId,
   type,
@@ -55,6 +56,7 @@ const Agent: React.FC<AgentProps> = ({
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [isProcessingFeedback, setIsProcessingFeedback] = useState(false);
+  const [showConfirmClose, setShowConfirmClose] = useState(false);
 
   useEffect(() => {
     const onCallStart = () => {
@@ -95,7 +97,6 @@ const Agent: React.FC<AgentProps> = ({
       setCallStatus(CallStatus.INACTIVE);
     };
 
-    // Register event listeners
     vapi.on("call-start", onCallStart);
     vapi.on("call-end", onCallEnd);
     vapi.on("message", onMessage);
@@ -104,7 +105,6 @@ const Agent: React.FC<AgentProps> = ({
     vapi.on("error", onError);
 
     return () => {
-      // Cleanup event listeners
       vapi.off("call-start", onCallStart);
       vapi.off("call-end", onCallEnd);
       vapi.off("message", onMessage);
@@ -196,6 +196,22 @@ const Agent: React.FC<AgentProps> = ({
     }
   };
 
+  const handleClose = () => {
+    if (callStatus === CallStatus.ACTIVE) {
+      setShowConfirmClose(true);
+    } else {
+      router.push('/');
+    }
+  };
+
+  const confirmClose = () => {
+    if (callStatus === CallStatus.ACTIVE) {
+      handleDisconnect();
+    }
+    setShowConfirmClose(false);
+    router.push('/');
+  };
+
   const getStatusIcon = () => {
     switch (callStatus) {
       case CallStatus.CONNECTING:
@@ -209,31 +225,80 @@ const Agent: React.FC<AgentProps> = ({
     }
   };
 
-  const getStatusText = () => {
-    switch (callStatus) {
-      case CallStatus.CONNECTING:
-        return "Connecting...";
-      case CallStatus.ACTIVE:
-        return "Interview Active";
-      case CallStatus.FINISHED:
-        return isProcessingFeedback ? "Processing Feedback..." : "Interview Complete";
-      default:
-        return "Ready to Start";
-    }
-  };
-
   const latestMessage = messages[messages.length - 1]?.content;
-  const isCallInactiveOrFinished =
-    callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
 
   return (
     <div className="space-y-6">
+      {/* Header with Close Button */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+            <Brain size={20} className="text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">AI Interview Session</h2>
+            <p className="text-sm text-gray-600">
+              {type === "interview" ? "Practice Interview" : "Interview Generation"}
+            </p>
+          </div>
+        </div>
+
+        <Button
+          onClick={handleClose}
+          variant="outline"
+          size="sm"
+          className="flex items-center space-x-2 hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors"
+        >
+          <X size={16} />
+          <span>Close</span>
+        </Button>
+      </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmClose && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle size={24} className="text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                End Interview Session?
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Your interview is currently active. Closing will end the session and you may lose your progress.
+              </p>
+              <div className="flex space-x-3">
+                <Button
+                  onClick={() => setShowConfirmClose(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Continue Interview
+                </Button>
+                <Button
+                  onClick={confirmClose}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  End & Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Connection Status */}
       <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             {getStatusIcon()}
-            <span className="font-medium text-gray-900">{getStatusText()}</span>
+            <span className="font-medium text-gray-900">
+              {callStatus === CallStatus.CONNECTING && "Connecting..."}
+              {callStatus === CallStatus.ACTIVE && "Interview Active"}
+              {callStatus === CallStatus.FINISHED && (isProcessingFeedback ? "Processing Feedback..." : "Interview Complete")}
+              {callStatus === CallStatus.INACTIVE && "Ready to Start"}
+            </span>
           </div>
           
           {callStatus === CallStatus.ACTIVE && (
@@ -335,12 +400,9 @@ const Agent: React.FC<AgentProps> = ({
             )}
             
             {messages.length > 1 && (
-              <button 
-                className="text-blue-600 text-sm mt-2 hover:text-blue-700 transition-colors"
-                onClick={() => {/* Show full transcript modal */}}
-              >
+              <p className="text-blue-600 text-sm mt-2">
                 View full conversation ({messages.length} messages)
-              </button>
+              </p>
             )}
           </div>
         </div>
@@ -388,6 +450,19 @@ const Agent: React.FC<AgentProps> = ({
         )}
       </div>
 
+      {/* Quick Actions */}
+      <div className="flex justify-center">
+        <Button
+          onClick={() => router.push('/')}
+          variant="outline"
+          className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600"
+          disabled={callStatus === CallStatus.ACTIVE}
+        >
+          <Home size={16} />
+          <span>Return to Dashboard</span>
+        </Button>
+      </div>
+
       {/* Help Text */}
       <div className="text-center">
         <p className="text-sm text-gray-600">
@@ -402,4 +477,4 @@ const Agent: React.FC<AgentProps> = ({
   );
 };
 
-export default Agent;
+export default AgentWithClose;

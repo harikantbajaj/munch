@@ -1,3 +1,5 @@
+'use client'
+
 import { clearCookies } from '@/lib/utils'
 
 const Logout = () => {
