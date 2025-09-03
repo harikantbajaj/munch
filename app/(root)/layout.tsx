@@ -26,7 +26,7 @@ const RootLayout =   async ({ children }: { children: ReactNode}) => {
             width={38}
             height={32}
           />
-          <h2 className="text-primary-100">Voicr.</h2>
+          <h2 className="text-primary-100">Munch.</h2>
         </Link>
 
 

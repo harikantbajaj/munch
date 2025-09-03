@@ -28,7 +28,7 @@ const page = async () => {
             Practice on real interview questions and get instant feedback
           </p>
           <Button asChild className="btn-primary max-sm:w-full">
-            <Link href="/interview">Start practicing</Link>
+            <Link href="/interview">Mock Interview</Link>
           </Button>
         </div>
 
@@ -43,13 +43,13 @@ const page = async () => {
       </section>
 
       <section className="flex flex-col gap-6 mt-8">
-        <h2>Explore Other Features</h2>
+        <h2>Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Button asChild className="btn-secondary">
-            <Link href="/quiz">Take a Quiz</Link>
+            <Link href="/quiz">Quiz</Link>
           </Button>
           <Button asChild className="btn-secondary">
-            <Link href="/code-compiler">Code Compiler</Link>
+            <Link href="/code-compiler">Leetcode Hub</Link>
           </Button>
           <Button asChild className="btn-secondary">
             <Link href="/resume-analyzer">Resume Analyzer</Link>
@@ -68,20 +68,20 @@ const page = async () => {
               <InterviewCard {...interview} key={interview.id} />
             ))
           ) : (
-            <p>You have no interviews yet.</p>
+            <p></p>
           )}
         </div>
       </section>
 
       <section className="flex flex-col gap-6 mt-8">
-        <h2>Take an interview</h2>
+        <h2></h2>
         <div className="interviews-section">
           {hasLatestInterviews ? (
             latestInterviews!.interviews.map((interview) => (
               <InterviewCard {...interview} key={interview.id} />
             ))
           ) : (
-            <p>There are no interviews available</p>
+            <p></p>
           )}
         </div>
       </section>
