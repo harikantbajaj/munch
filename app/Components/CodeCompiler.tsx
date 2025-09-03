@@ -17,12 +17,12 @@ import {
 } from 'lucide-react';
 
 const languages = [
-  { id: 'javascript', name: 'JavaScript', extension: '.js', sample: 'console.log("Hello, World!");' },
-  { id: 'python', name: 'Python', extension: '.py', sample: 'print("Hello, World!")' },
-  { id: 'java', name: 'Java', extension: '.java', sample: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}' },
-  { id: 'cpp', name: 'C++', extension: '.cpp', sample: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}' },
-  { id: 'csharp', name: 'C#', extension: '.cs', sample: 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}' },
-  { id: 'ruby', name: 'Ruby', extension: '.rb', sample: 'puts "Hello, World!"' },
+  { id: 'javascript', name: 'JavaScript', extension: '.js', sample: 'console.log("Hello, World!");', jdoodleId: 'nodejs' },
+  { id: 'python', name: 'Python', extension: '.py', sample: 'print("Hello, World!")', jdoodleId: 'python3' },
+  { id: 'java', name: 'Java', extension: '.java', sample: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}', jdoodleId: 'java' },
+  { id: 'cpp', name: 'C++', extension: '.cpp', sample: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}', jdoodleId: 'cpp' },
+  { id: 'csharp', name: 'C#', extension: '.cs', sample: 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}', jdoodleId: 'csharp' },
+  { id: 'ruby', name: 'Ruby', extension: '.rb', sample: 'puts "Hello, World!"', jdoodleId: 'ruby' },
 ];
 
 interface ExecutionResult {
@@ -55,19 +55,53 @@ const CodeCompiler: React.FC = () => {
     setOutput(null);
 
     try {
-      // Simulated API call - replace with actual Judge0 or similar service
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-      
-      // Mock execution result
-      const mockResult = {
-        stdout: `Code executed successfully!\nLanguage: ${languages.find(l => l.id === language)?.name}\nTime: ${Math.random() * 100 + 50}ms\nMemory: ${Math.random() * 50 + 10}KB`,
-        stderr: '',
-        error: null,
-        executionTime: `${Math.random() * 100 + 50}ms`,
-        memoryUsage: `${Math.random() * 50 + 10}KB`
-      };
+      const selectedLang = languages.find(l => l.id === language);
+      if (!selectedLang) {
+        setOutput({
+          stdout: '',
+          stderr: '',
+          error: 'Unsupported language selected'
+        });
+        setLoading(false);
+        return;
+      }
 
-      setOutput(mockResult);
+      // Get JDoodle credentials from environment variables
+      const clientId = process.env.NEXT_PUBLIC_JDOODLE_CLIENT_ID;
+      const clientSecret = process.env.NEXT_PUBLIC_JDOODLE_CLIENT_SECRET;
+
+      if (!clientId || !clientSecret) {
+        throw new Error('JDoodle credentials not configured. Please add NEXT_PUBLIC_JDOODLE_CLIENT_ID and NEXT_PUBLIC_JDOODLE_CLIENT_SECRET to your .env file.');
+      }
+
+      // Call JDoodle API for code execution
+      const response = await fetch('https://api.jdoodle.com/v1/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          script: code,
+          language: selectedLang.jdoodleId,
+          versionIndex: '0',
+          clientId: clientId,
+          clientSecret: clientSecret
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`JDoodle API request failed with status ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      setOutput({
+        stdout: result.output || '',
+        stderr: '',
+        error: result.error || null,
+        executionTime: result.cpuTime ? `${result.cpuTime}s` : undefined,
+        memoryUsage: result.memory ? `${result.memory} KB` : undefined
+      });
     } catch (error: any) {
       setOutput({
         stdout: '',
