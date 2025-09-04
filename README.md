@@ -1,40 +1,69 @@
-# Voicr — Your Interview Prep Buddy
+🚀 Munch - Your Ultimate Interview Prep Buddy 🎤🤖
 
-**An AI-powered mock interview platform to help you practice and improve for your interviews.**
+```
+ __     ______  _    _   _      ____   _____ ______
+ \ \   / / __ \| |  | | | |    / __ \ / ____|  ____|
+  \ \_/ / |  | | |  | | | |   | |  | | (___ | |__
+   \   /| |  | | |  | | | |   | |  | |\___ \|  __|
+    | | | |__| | |__| | | |___| |__| |____) | |____
+    |_|  \____/ \____/  |______\____/|_____/|______|
 
-Voicr simulates real-time voice-based interviews using AI. It asks smart, tailored questions based on your experience and goals — and gives you actionable feedback to help you get better with every session.
+```
 
-![Next.js](https://img.shields.io/badge/Next.js-000?style=for-the-badge&logo=next.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=for-the-badge&logo=typescript&logoColor=white)
-![Vapi](https://img.shields.io/badge/Vapi_AI-voice--powered-blueviolet?style=for-the-badge)
-![ShadCN UI](https://img.shields.io/badge/ShadCN--UI-%23121212?style=for-the-badge)
-![Google Gemini](https://img.shields.io/badge/Gemini-Google-blue?style=for-the-badge&logo=google)
-![Vercel AI SDK](https://img.shields.io/badge/Vercel--AI--SDK-000?style=for-the-badge&logo=vercel)
-![MIT License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+Welcome to **Munch**, the AI-powered platform designed to transform your interview preparation experience. Practice real-time voice interviews, get personalized feedback, and boost your confidence to land your dream job!
 
-## Features
+---
 
-- ✅ Real-time, voice-based AI interviews (via [Vapi](https://vapi.ai))
-- 🧠 Interview questions generated using Google Gemini
-- 💬 Feedback tailored to your responses
-- 👤 Personalized dashboard: choose topics, experience level, and number of questions
-- 💻 Built with **Next.js**, **TypeScript**, **ShadCN UI**, and **Vercel AI SDK**
+## ✨ Why Munch?
 
+- **Voice-Driven AI Interviews:** Speak naturally, and let AI listen, transcribe, and respond in real-time.
+- **Smart Question Generation:** Powered by Google Gemini, tailored to your experience and goals.
+- **Instant, Actionable Feedback:** Improve with every session based on your answers.
+- **Personalized Dashboard:** Track progress, select topics, and customize your interview experience.
+- **Built with Modern Tech:** Next.js, TypeScript, ShadCN UI, Vercel AI SDK, and more.
 
-## 🛠️ Getting Started (Locally)
+---
 
-To run this project on your local machine:
+## 🎯 Features
+
+- 🎙️ Real-time voice interaction with AI interviewer
+- 🧠 AI-generated interview questions tailored to your profile
+- 📊 Detailed feedback and scoring after each mock interview
+- 🗂️ Manage and review past interviews and feedback
+- 📝 Quiz mode with MCQ questions for quick practice on specific topics
+- 💻 Integrated LeetCode Hub for coding practice and problem solving
+- 📄 Resume Analyzer to optimize your CV
+- 🤖 AI Chatbot for instant help and guidance
+- 🔧 Code Compiler for testing your solutions
+- 📈 Progress tracking and analytics
+- 🎯 Topic-wise practice sessions
+
+---
+
+## 🚀 Getting Started Locally
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/blossom-babs/interview_prep
+git clone https://github.com/harikantbajaj/munch
 cd interview_prep
+```
 
-[npm | pnpm | yarn] install
+### 2. Install dependencies
 
-//.env.local
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
 
+### 3. Setup environment variables
+
+Create a `.env.local` file in the root directory and add:
+
+```
 FIREBASE_PROJECT_ID=
 FIREBASE_PRIVATE_KEY_ID=
 FIREBASE_PRIVATE_KEY=
@@ -43,15 +72,61 @@ GOOGLE_GENERATIVE_AI_API_KEY=
 NEXT_PUBLIC_VAPI_WEB_TOKEN=
 NEXT_PUBLIC_VAPI_WORKFLOW_ID=
 NEXT_PUBLIC_BASE_URL="https://interview-prep-theta-gilt.vercel.app/"
-
 ```
-## Try it out
-👉🏽 https://interview-prep-theta-gilt.vercel.app/  or localhost
 
-1. **Sign up or log in** to your account.
-2. Click on start practicing to generate questions
-3. Take your interview
-4. You’ll answer aloud; the AI listens, transcribes, and reacts in real-time.
-5. After the interview, you’ll receive feedback to help improve your responses.
+### 4. Run the development server
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to start practicing!
+
+---
 
 
+
+## 🛠️ How to Use
+
+1. Sign up or log in to your account.
+2. Choose your interview topics, experience level, and number of questions.
+3. Start your mock interview and answer aloud.
+4. Receive real-time AI feedback and tips.
+5. Review your past interviews and track your progress.
+
+---
+
+## 📚 Tech Stack
+
+- **Next.js** - React framework for server-side rendering and static site generation
+- **TypeScript** - Type safety and developer experience
+- **ShadCN UI** - Beautiful, accessible UI components
+- **Vercel AI SDK** - AI integration and API handling
+- **Firebase** - Authentication and backend services
+- **Google Gemini** - AI question generation and feedback
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open issues or pull requests for bug fixes, features, or improvements.
+
+---
+
+
+## 🙏 Acknowledgements
+
+Thanks to all the open-source projects and communities that made this possible!
+
+---
+
+Made with ❤️ by the Munch Team
+cd interview*prep
+|*| \_**\_/ \_\_**/ |**\_\_**\_**\_/|\_\_\_**/|**\_\_**|
+Made with ❤️ by the Munch Team
+cd interview*prep
+|*| \_**\_/ \_\_**/ |**\_\_**\_**\_/|\_\_\_**/|**\_\_**|
