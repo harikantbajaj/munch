@@ -130,3 +130,9 @@ cd interview*prep
 Made with ❤️ by the Munch Team
 cd interview*prep
 |*| \_**\_/ \_\_**/ |**\_\_**\_**\_/|\_\_\_**/|**\_\_**|
+
+
+<img width="1919" height="918" alt="Screenshot 2025-09-04 175331" src="https://github.com/user-attachments/assets/4c4bb126-e427-4c42-bbd6-29dada4087ab" />
+<img width="1919" height="979" alt="Screenshot 2025-09-04 175338" src="https://github.com/user-attachments/assets/b9a3d702-fa40-4496-baf0-f5c3444df324" />
+<img width="1919" height="967" alt="Screenshot 2025-09-04 175409" src="https://github.com/user-attachments/assets/b4efcec5-d4e5-427a-b63b-f29565e09acf" />
+<img width="1919" height="963" alt="Screenshot 2025-09-04 175400" src="https://github.com/user-attachments/assets/bdf26a7a-282f-4ca5-923b-fb34e20f03de" />
