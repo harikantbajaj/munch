@@ -9,9 +9,10 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+firebase/client.ts
 # testing
 /coverage
+
 
 # next.js
 /.next/
