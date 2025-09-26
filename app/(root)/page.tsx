@@ -12,13 +12,18 @@ import {
 const page = async () => {
   const user = await getCurrentUser();
 
-  const [userInterviews, latestInterviews] = await Promise.all([
-    getInterviewsByUserId(user?.id!),
-    getLatestInterviews({ userId: user?.id! }),
-  ]);
+  let userInterviews = null;
+  let latestInterviews = null;
 
-  const hasPastInterviews = userInterviews?.interviews?.length! > 0;
-  const hasLatestInterviews = latestInterviews?.interviews?.length! > 0;
+  if (user) {
+    [userInterviews, latestInterviews] = await Promise.all([
+      getInterviewsByUserId(user.id),
+      getLatestInterviews({ userId: user.id }),
+    ]);
+  }
+
+  const hasPastInterviews = userInterviews && userInterviews.interviews && userInterviews.interviews.length > 0;
+  const hasLatestInterviews = latestInterviews && latestInterviews.interviews && latestInterviews.interviews.length > 0;
   return (
     <>
       <section className="card-cta">

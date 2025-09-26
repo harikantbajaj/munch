@@ -106,12 +106,12 @@ const FormField = <T extends FieldValues>({
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   className={cn(
-                    "w-full transition-all duration-200",
+                    "w-full transition-all duration-200 text-gray-900",
                     showIcon && "pl-11",
                     type === 'password' && "pr-11",
-                    hasError 
-                      ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" 
-                      : isValid 
+                    hasError
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                      : isValid
                       ? "border-green-300 focus:border-green-500 focus:ring-green-500/20"
                       : "border-gray-300 focus:border-blue-500 focus:ring-blue-500/20",
                     "bg-white/80 backdrop-blur-sm rounded-xl py-3 px-4",

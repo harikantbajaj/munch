@@ -81,10 +81,10 @@ const initializeFirebaseClient = (): FirebaseServices => {
       }
     }
 
-    // Connect to emulators in development
-    if (isDevelopment && isClient) {
-      setupEmulators(auth, db);
-    }
+    // Connect to emulators in development - DISABLED to use production Firebase for auth testing
+    // if (isDevelopment && isClient) {
+    //   setupEmulators(auth, db);
+    // }
 
     console.log("✅ Firebase Client SDK initialized successfully");
 

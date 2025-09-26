@@ -68,20 +68,39 @@ const AuthForm = ({ type }: { type: FormType }) => {
           toast.error(error.message || "Failed to create account");
           return;
         }
+        const idToken = await userCredentials.user.getIdToken();
         const result = await signUp({
-          uid: userCredentials.user.uid,
+          idToken,
           name: name!,
           email,
           password,
         });
 
         if (!result?.success) {
-          toast.error(result?.message);
+          toast.error(result?.message ?? "Failed to create account");
           return;
         }
 
-        toast.success("Account created successfully! Please sign in");
-        router.push("/sign-in");
+        // Auto sign in after successful sign up
+        try {
+          const idToken = await userCredentials.user.getIdToken();
+          const signInResult = await signIn({
+            email,
+            idToken,
+          });
+
+          if (signInResult.success) {
+            toast.success("Account created and signed in successfully!");
+            router.push("/");
+          } else {
+            toast.error(signInResult.message ?? "Sign in failed after account creation");
+            router.push("/sign-in");
+          }
+        } catch (signInError) {
+          console.error("Auto sign-in error:", signInError);
+          toast.success("Account created successfully! Please sign in");
+          router.push("/sign-in");
+        }
       } else {
         const { email, password } = values;
         const userCredential = await signInWithEmailAndPassword(
@@ -105,8 +124,28 @@ const AuthForm = ({ type }: { type: FormType }) => {
     } catch (error: any) {
       console.log(error);
 
-      if (error.code === "auth/invalid-credential") {
+      if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
         toast.error("Invalid email or password.");
+        return;
+      }
+
+      if (error.code === "auth/user-not-found") {
+        toast.error("User not found. Please sign up first.");
+        return;
+      }
+
+      if (error.code === "auth/email-already-in-use") {
+        toast.error("An account with this email already exists.");
+        return;
+      }
+
+      if (error.code === "auth/weak-password") {
+        toast.error("Password is too weak. Please choose a stronger password.");
+        return;
+      }
+
+      if (error.code === "auth/invalid-email") {
+        toast.error("Invalid email address.");
         return;
       }
 

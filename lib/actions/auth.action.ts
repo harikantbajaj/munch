@@ -11,7 +11,7 @@ const ONE_WEEK_MS = ONE_WEEK_SECONDS * 1000; // 7 days in milliseconds
 
 // === VALIDATION SCHEMAS ===
 const signUpSchema = z.object({
-  uid: z.string().min(1, "User ID is required"),
+  idToken: z.string().min(1, "ID token is required"),
   name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"), // Not stored, just validated
@@ -21,6 +21,18 @@ const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
   idToken: z.string().min(1, "ID token is required"),
 });
+
+export interface SignUpParams {
+  idToken: string;
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface SignInParams {
+  email: string;
+  idToken: string;
+}
 
 // === TYPES ===
 export interface AuthResult {
@@ -72,29 +84,31 @@ export async function signUp(params: SignUpParams): Promise<AuthResult> {
   try {
     // Validate input
     const validatedData = signUpSchema.parse(params);
-    const { uid, name, email } = validatedData;
+    const { idToken, name, email } = validatedData;
 
-    logAuthEvent("SIGNUP_ATTEMPT", { email, uid });
+    logAuthEvent("SIGNUP_ATTEMPT", { email });
+
+    // Verify the ID token and get user info
+    const tokenVerification = await adminUtils.verifyIdToken(idToken);
+    if (!tokenVerification.success) {
+      logAuthEvent("SIGNUP_FAILED", { email, reason: "INVALID_TOKEN" });
+      return {
+        success: false,
+        message: "Invalid authentication token. Please try again.",
+      };
+    }
+
+    const uid = tokenVerification.uid;
 
     // Check if user already exists in Firestore
     const existingUser = await db.collection("users").doc(uid).get();
     
     if (existingUser.exists) {
-      logAuthEvent("SIGNUP_FAILED", { email, reason: "USER_EXISTS" });
+      logAuthEvent("SIGNUP_FAILED", { email, uid, reason: "USER_EXISTS" });
       return {
         success: false,
         message: "An account with this email already exists. Please sign in instead.",
         redirectTo: "/sign-in",
-      };
-    }
-
-    // Verify the user exists in Firebase Auth (should exist since we have uid)
-    const userRecord = await adminUtils.getUserByUid(uid);
-    if (!userRecord.success) {
-      logAuthEvent("SIGNUP_FAILED", { email, reason: "AUTH_USER_NOT_FOUND" });
-      return {
-        success: false,
-        message: "Authentication error. Please try again.",
       };
     }
 
@@ -120,8 +134,8 @@ export async function signUp(params: SignUpParams): Promise<AuthResult> {
 
     return {
       success: true,
-      message: "Account created successfully! You can now sign in.",
-      redirectTo: "/sign-in",
+      message: "Account created successfully!",
+      redirectTo: "/",
     };
 
   } catch (error) {
@@ -199,7 +213,7 @@ export async function signIn(params: SignInParams): Promise<AuthResult> {
 
     // Get user from Firebase Auth
     const userRecord = await adminUtils.getUserByUid(tokenVerification.uid);
-    if (!userRecord.success) {
+    if (!userRecord.success || !userRecord.user) {
       logAuthEvent("SIGNIN_FAILED", { email, reason: "USER_NOT_FOUND" });
       return {
         success: false,
@@ -208,13 +222,15 @@ export async function signIn(params: SignInParams): Promise<AuthResult> {
       };
     }
 
+    const authUser = userRecord.user;
+
     // Ensure user exists in Firestore
     let firestoreUser = await db.collection("users").doc(tokenVerification.uid).get();
     
     if (!firestoreUser.exists) {
       // Create user document if it doesn't exist (edge case)
       const userData = {
-        name: userRecord.user.displayName || email.split("@")[0],
+        name: authUser.displayName || email.split("@")[0],
         email: email.toLowerCase(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -232,6 +248,14 @@ export async function signIn(params: SignInParams): Promise<AuthResult> {
       firestoreUser = await db.collection("users").doc(tokenVerification.uid).get();
     }
 
+    if (!firestoreUser.exists) {
+      logAuthEvent("SIGNIN_FAILED", { email, reason: "FIRESTORE_USER_NOT_FOUND" });
+      return {
+        success: false,
+        message: "Failed to retrieve user data. Please try again.",
+      };
+    }
+
     // Update last login
     await db.collection("users").doc(tokenVerification.uid).update({
       lastLoginAt: new Date().toISOString(),
@@ -244,7 +268,7 @@ export async function signIn(params: SignInParams): Promise<AuthResult> {
       logAuthEvent("SIGNIN_FAILED", { email, reason: "SESSION_ERROR" });
       return {
         success: false,
-        message: sessionResult.error || "Failed to create session. Please try again.",
+        message: sessionResult.error ?? "Failed to create session. Please try again.",
       };
     }
 
@@ -316,7 +340,11 @@ export async function getCurrentUser(): Promise<User | null> {
     if (error instanceof Error && error.message.includes("expired")) {
       return null;
     }
-    
+
+    // Clear invalid session cookie to prevent repeated errors
+    const cookieStore = await cookies();
+    cookieStore.delete("session");
+
     console.error("Get current user error:", error);
     return null;
   }
