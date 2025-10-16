@@ -1,5 +1,19 @@
-# TODO: Remove Sign-in and Sign-up Pages and Enable Direct Home Page Access
+# MCQ Generation Implementation
 
-- [x] Remove authentication check in `app/(root)/layout.tsx` to prevent redirect to `/sign-in`
-- [x] Delete the entire `app/(auth)/` directory containing sign-in and sign-up pages
-- [ ] Test the app to ensure home page loads directly without authentication
+## Completed Tasks
+- [x] Create API route for MCQ generation using Gemini LLM
+- [x] Implement methodology: text preprocessing, keyword extraction, question formation, distractor generation
+- [x] Add proper error handling and validation
+- [x] Include GET endpoint for API documentation
+
+## Pending Tasks
+- [ ] Test the API endpoint with sample text
+- [ ] Verify JSON response structure
+- [ ] Check integration with existing Quiz component (optional)
+- [ ] Add frontend interface for MCQ generation (if needed)
+
+## Next Steps
+1. Test the API by making a POST request with sample text content
+2. Validate that the generated MCQs follow the required format
+3. Ensure questions are relevant and distractors are plausible
+4. Consider adding a UI component to input text and display generated MCQs
